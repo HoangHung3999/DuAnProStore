@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fpoly.hungph53757.duanprostore.Database.UserHelper;
 import fpoly.hungph53757.duanprostore.Model.User;
 
@@ -50,4 +53,25 @@ public class UserDao {
         cursor.close();
         return null;
     }
+    public List<User> getAllUsers() {
+        List<User> list = new ArrayList<>();
+        SQLiteDatabase db = userHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String username = cursor.getString(1);
+                String email = cursor.getString(2);
+                String password = cursor.getString(3);
+                String role = cursor.getString(4);
+
+                list.add(new User(id, username, email, password, role));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return list;
+    }
+
 }

@@ -9,18 +9,9 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/frame_layout"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:layout_width="match_parent"
-        android:layout_height="89dp"
-        android:background="#050505"
-        android:layout_marginBottom="20dp"
-        app:menu="@menu/menu_bottomnavigation"
-        android:id="@+id/bottomNavigation"/>
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:text="adv"/>
 
 </LinearLayout>
