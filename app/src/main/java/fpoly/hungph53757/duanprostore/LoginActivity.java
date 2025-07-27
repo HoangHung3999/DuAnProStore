@@ -15,6 +15,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fpoly.hungph53757.duanprostore.Dao.UserDao;
+import fpoly.hungph53757.duanprostore.Model.User;
 
 public class LoginActivity extends AppCompatActivity {
     EditText edtEmail, edtPassword;
@@ -41,10 +42,9 @@ public class LoginActivity extends AppCompatActivity {
         chkRemember = findViewById(R.id.chkRemember);
 
         userDAO = new UserDao(this);
-
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
-        // Load saved data if available
+        // Load dữ liệu Remember Me nếu có
         String savedEmail = sharedPreferences.getString("email", "");
         String savedPassword = sharedPreferences.getString("password", "");
         boolean savedRemember = sharedPreferences.getBoolean("remember", false);
@@ -66,12 +66,12 @@ public class LoginActivity extends AppCompatActivity {
             String password = edtPassword.getText().toString().trim();
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            boolean isValid = userDAO.checkLogin(email, password);
-            if (isValid) {
+            User user = userDAO.checkLogin(email, password);
+            if (user != null) {
                 Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
 
                 if (chkRemember.isChecked()) {
@@ -84,30 +84,33 @@ public class LoginActivity extends AppCompatActivity {
                     sharedPreferences.edit().clear().apply();
                 }
 
-                startActivity(new Intent(this, MainActivity.class));
+                // Phân quyền
+                if (user.getRole().equals("admin")) {
+                    startActivity(new Intent(this, AdminActivity.class));
+                } else {
+                    startActivity(new Intent(this, MainActivity.class));
+                }
                 finish();
             } else {
                 Toast.makeText(this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
             }
         });
 
-        boolean[] isPasswordVisible = {false}; // dùng mảng để có thể thay đổi giá trị trong lambda
-
+        // Hiện/ẩn mật khẩu
+        boolean[] isPasswordVisible = {false};
         edtPassword.setOnTouchListener((v, event) -> {
-            final int DRAWABLE_RIGHT = 2; // vị trí drawableEnd
+            final int DRAWABLE_RIGHT = 2;
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (edtPassword.getRight() - edtPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                     if (isPasswordVisible[0]) {
-                        // Ẩn mật khẩu
                         edtPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                         edtPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye, 0);
                     } else {
-                        // Hiện mật khẩu
                         edtPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                         edtPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye, 0);
                     }
                     isPasswordVisible[0] = !isPasswordVisible[0];
-                    edtPassword.setSelection(edtPassword.getText().length()); // giữ vị trí con trỏ
+                    edtPassword.setSelection(edtPassword.getText().length());
                     return true;
                 }
             }

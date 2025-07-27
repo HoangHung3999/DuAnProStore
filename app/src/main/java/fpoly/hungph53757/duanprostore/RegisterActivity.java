@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            boolean isSuccess = userDao.insertUser(name,email,password);
+            boolean isSuccess = userDao.insertUser(name, email, password, "user");
             if(isSuccess){
                 Toast.makeText(this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
